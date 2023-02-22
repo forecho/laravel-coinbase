@@ -1,10 +1,10 @@
 <?php
 
-namespace Shakurov\Coinbase\Tests\Http\Middleware;
+namespace Forecho\Coinbase\Tests\Http\Middleware;
 
 use Illuminate\Support\Facades\Route;
-use Shakurov\Coinbase\Tests\TestCase;
-use Shakurov\Coinbase\Http\Middleware\VerifySignature;
+use Forecho\Coinbase\Tests\TestCase;
+use Forecho\Coinbase\Http\Middleware\VerifySignature;
 
 class VerifySignatureTest extends TestCase
 {

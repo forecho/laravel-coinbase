@@ -1,6 +1,6 @@
 <?php
 
-namespace Shakurov\Coinbase\Facades;
+namespace Forecho\Coinbase\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getEvents(array $query = []) Lists all events.
  * @method static array getEvent($eventId) Retrieves an existing event.
  *
- * @see \Shakurov\Coinbase\Coinbase
+ * @see \Forecho\Coinbase\Coinbase
  */
 class Coinbase extends Facade
 {
@@ -34,6 +34,6 @@ class Coinbase extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'Shakurov\Coinbase\Coinbase';
+        return 'Forecho\Coinbase\Coinbase';
     }
 }

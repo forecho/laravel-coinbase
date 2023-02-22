@@ -1,18 +1,20 @@
 # Laravel wrapper for the Coinbase Commerce API
 
+The code's copyright belongs to [shakurov](https://github.com/shakurov) and [alexstewartja](https://github.com/alexstewartja), but because he hasn't merged [the damn pull request](https://github.com/shakurov/laravel-coinbase/pull/15) for too long, I had to fork a copy and change the namespace for the convenience of composer request.
+
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require shakurov/coinbase
+composer require forecho/coinbase
 ```
 
 The service provider will automatically register itself.
 
 You must publish the config file with:
 ```bash
-php artisan vendor:publish --provider="Shakurov\Coinbase\CoinbaseServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Forecho\Coinbase\CoinbaseServiceProvider" --tag="config"
 ```
 
 This is the contents of the config file that will be published at `config/coinbase.php`:
@@ -31,7 +33,7 @@ return [
         // 'charge:pending' => \App\Jobs\CoinbaseWebhooks\HandlePendingCharge::class,
         // 'charge:resolved' => \App\Jobs\CoinbaseWebhooks\HandleResolvedCharge::class,
     ],
-    'webhookModel' => Shakurov\Coinbase\Models\CoinbaseWebhookCall::class,
+    'webhookModel' => Forecho\Coinbase\Models\CoinbaseWebhookCall::class,
 ];
 
 ```
@@ -40,7 +42,7 @@ In the `webhookSecret` key of the config file you should add a valid webhook sec
 
 Next, you must publish the migration with:
 ```bash
-php artisan vendor:publish --provider="Shakurov\Coinbase\CoinbaseServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="Forecho\Coinbase\CoinbaseServiceProvider" --tag="migrations"
 ```
 
 After the migration has been published you can create the `coinbase_webhook_calls` table by running the migrations:
@@ -189,7 +191,7 @@ Coinbase Commerce will sign all requests hitting the webhook url of your app. Th
  
 Unless something goes terribly wrong, this package will always respond with a `200` to webhook requests. Sending a `200` will prevent Coinbase Commerce from resending the same event over and over again. All webhook requests with a valid signature will be logged in the `coinbase_webhook_calls` table. The table has a `payload` column where the entire payload of the incoming webhook is saved.
 
-If the signature is not valid, the request will not be logged in the `coinbase_webhook_calls` table but a `Shakurov\Coinbase\Exceptions\WebhookFailed` exception will be thrown.
+If the signature is not valid, the request will not be logged in the `coinbase_webhook_calls` table but a `Forecho\Coinbase\Exceptions\WebhookFailed` exception will be thrown.
 If something goes wrong during the webhook request the thrown exception will be saved in the `exception` column. In that case the controller will send a `500` instead of `200`. 
  
 There are two ways this package enables you to handle webhook requests: you can opt to queue a job or listen to the events the package will fire.
@@ -207,13 +209,13 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Shakurov\Coinbase\Models\CoinbaseWebhookCall;
+use Forecho\Coinbase\Models\CoinbaseWebhookCall;
 
 class HandleCreatedCharge implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
     
-    /** @var \Shakurov\Coinbase\Models\CoinbaseWebhookCall */
+    /** @var \Forecho\Coinbase\Models\CoinbaseWebhookCall */
     public $webhookCall;
 
     public function __construct(CoinbaseWebhookCall $webhookCall)
@@ -271,7 +273,7 @@ Here's an example of such a listener:
 namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Shakurov\Coinbase\Models\CoinbaseWebhookCall;
+use Forecho\Coinbase\Models\CoinbaseWebhookCall;
 
 class ChargeCreatedListener implements ShouldQueue
 {
@@ -295,19 +297,19 @@ The above example is only one way to handle events in Laravel. To learn the othe
 All incoming webhook requests are written to the database. This is incredibly valuable when something goes wrong while handling a webhook call. You can easily retry processing the webhook call, after you've investigated and fixed the cause of failure, like this:
 
 ```php
-use Shakurov\Coinbase\Models\CoinbaseWebhookCall;
+use Forecho\Coinbase\Models\CoinbaseWebhookCall;
 
 CoinbaseWebhookCall::find($id)->process();
 ```
 
 ### Performing custom logic
 
-You can add some custom logic that should be executed before and/or after the scheduling of the queued job by using your own model. You can do this by specifying your own model in the `model` key of the `coinbase` config file. The class should extend `Shakurov\Coinbase\Models\CoinbaseWebhookCall`.
+You can add some custom logic that should be executed before and/or after the scheduling of the queued job by using your own model. You can do this by specifying your own model in the `model` key of the `coinbase` config file. The class should extend `Forecho\Coinbase\Models\CoinbaseWebhookCall`.
 
 Here's an example:
 
 ```php
-use Shakurov\Coinbase\Models\CoinbaseWebhookCall;
+use Forecho\Coinbase\Models\CoinbaseWebhookCall;
 
 class MyCustomWebhookCall extends CoinbaseWebhookCall
 {
